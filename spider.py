@@ -60,9 +60,6 @@ def extract_all_themes():
     for i in themes:
         theme_title_hrefs[i] = extract_theme_hrefs(i)
         
-        
-        
-        
 # the opinion pieces are found in the 'thematic section' but go by 
 # a different identifier. Easier to just single them out
 def extract_oped_hrefs():
@@ -72,9 +69,4 @@ def extract_oped_hrefs():
     for h in op_eds.findAll("h2"):
         ops_title_hrefs.update({h.a.text: h.a["href"]})
     
-    return {"opinion": ops_title_hrefs}        
-    op_eds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
-    ops_title_hrefs = {}
-    
-    for h in op_eds.findAll("h2"):
-        ops_title_hrefs.update({h.a.text: h.a["href"]})
+    return {"opinion": ops_title_hrefs}  

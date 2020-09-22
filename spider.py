@@ -22,16 +22,20 @@ section_c = page_soup.find("div", {"class":
 thematic_section = page_soup.find("div", {"class":
                                    "thematic_section | col desktop_12 tablet_8 mobile_4"})    
 
-# the opinion pieces are found in the 'thematic section' but go by 
-# a different identifier. Easier to just single them out
-op_eds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
-ops_title_and_hrefs = {}
-
-for h in op_eds.findAll("h2"):
-    ups_title_hrefs.update({h.a.text: h.a["href"]})
+top_section_title_hrefs = {}
     
-def extract_top_section_links(section):
-
+def extract_top_section_hrefs():
+    panes = section_b.findAll("h2")
+    panes_2 = section_c.findAll("h2")
+    
+    panes = panes + panes_2
+    
+    for pane in panes:
+        title = pane.a.text
+        href = pane.a["href"]
+        top_section_title_hrefs[title] = href
+    #return self
+    
     title_and_hrefs = {}    
     articles = section.findAll("article")
     
@@ -45,19 +49,44 @@ def extract_top_section_links(section):
 
     return title_and_hrefs
 
-def extract_thematic_section_links(section):
+
+def extract_theme_hrefs(theme):
     
-    theme_title_links = {}
-    themes = section.findAll("div",
+    theme_div = thematic_section.find("div", {"id": theme})
+    theme_headers = theme_div.findAll("h2")
+    temp = {}
+    
+    for l in theme_headers:
+        title = l.a.text
+        href = l.a["href"]
+        temp[title] = href
+    return temp
+
+def extract_all_themes():
+    
+    theme_title_hrefs = {}
+    themes = thematic_section.findAll("div",
                          {"class":"thematic_chain | row margin_top margin_bottom_sm"})
     themes = [t["id"] for t in themes]
     
     for i in themes:
-        theme_title_links[i] = []
+        theme_title_hrefs[i] = extract_theme_hrefs(i)
         
         
+        
+        
+# the opinion pieces are found in the 'thematic section' but go by 
+# a different identifier. Easier to just single them out
+def extract_oped_hrefs():
+    op_eds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
+    ops_title_hrefs = {}
     
-
-if __name__=="__main__":
-    sc = extract_top_section_links(section_c)
-
+    for h in op_eds.findAll("h2"):
+        ops_title_hrefs.update({h.a.text: h.a["href"]})
+    
+    return {"opinion": ops_title_hrefs}        
+    op_eds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
+    ops_title_hrefs = {}
+    
+    for h in op_eds.findAll("h2"):
+        ops_title_hrefs.update({h.a.text: h.a["href"]})

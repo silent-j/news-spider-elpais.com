@@ -25,7 +25,10 @@ thematic_section = page_soup.find("div", {"class":
 # the opinion pieces are found in the 'thematic section' but go by 
 # a different identifier. Easier to just single them out
 op_eds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
-    
+ops_title_and_hrefs = {}
+
+for h in op_eds.findAll("h2"):
+    ups_title_hrefs.update({h.a.text: h.a["href"]})
     
 def extract_top_section_links(section):
 
@@ -37,17 +40,22 @@ def extract_top_section_links(section):
         title = pane.text
         href = pane["href"]
         
-        title_and_hrefs[i] = (title, href)
+        #title_and_hrefs[i] = (title, href)
+        title_and_hrefs[title] = href
+
     return title_and_hrefs
 
 def extract_thematic_section_links(section):
     
-    
+    theme_title_links = {}
     themes = section.findAll("div",
                          {"class":"thematic_chain | row margin_top margin_bottom_sm"})
     themes = [t["id"] for t in themes]
     
-    thematic_links = {themes: [] for i in range(len(themes))}
+    for i in themes:
+        theme_title_links[i] = []
+        
+        
     
 
 if __name__=="__main__":

@@ -35,19 +35,7 @@ def extract_top_section_hrefs():
         href = pane.a["href"]
         top_section_title_hrefs[title] = href
     #return self
-    
-    title_and_hrefs = {}    
-    articles = section.findAll("article")
-    
-    for i in tqdm(range(len(articles))):
-        pane = articles[i].find("h2").a
-        title = pane.text
-        href = pane["href"]
-        
-        #title_and_hrefs[i] = (title, href)
-        title_and_hrefs[title] = href
 
-    return title_and_hrefs
 
 
 def extract_theme_hrefs(theme):

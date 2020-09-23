@@ -63,9 +63,7 @@ def extract_all_themes():
     for i in themes:
         theme_dict[i] = extract_theme_hrefs(i)
     
-      
-# the opinion pieces are found in the 'thematic section' but go by 
-# a different identifier
+
 def extract_oped_hrefs():
     
     opeds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})

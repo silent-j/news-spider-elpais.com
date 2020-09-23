@@ -5,7 +5,6 @@ from urllib import request
 
 url = "http://english.elpais.com"
 
-
 # request & parse page source
 
 client = request.urlopen(url)
@@ -14,7 +13,6 @@ client.close()
 page_soup = soup(page_source, 'html.parser')
 
 # get front-page sections
-
 section_b = page_soup.find("div", {"class":
                                       "section_b | col desktop_12 tablet_8 mobile_4"})
 section_c = page_soup.find("div", {"class":
@@ -23,6 +21,7 @@ thematic_section = page_soup.find("div", {"class":
                                    "thematic_section | col desktop_12 tablet_8 mobile_4"})    
 
 top_section_title_hrefs = {}
+theme_title_hrefs = {}
     
 def extract_top_section_hrefs():
     
@@ -35,7 +34,7 @@ def extract_top_section_hrefs():
         title = pane.a.text
         href = pane.a["href"]
         top_section_title_hrefs[title] = href
-    #return self
+    
 
 
 def extract_theme_hrefs(theme):
@@ -48,18 +47,21 @@ def extract_theme_hrefs(theme):
         title = l.a.text
         href = l.a["href"]
         temp[title] = href
+        
     return temp
 
 def extract_all_themes():
     
-    theme_title_hrefs = {}
     themes = thematic_section.findAll("div",
                          {"class":"thematic_chain | row margin_top margin_bottom_sm"})
+    theme_with_adbanner = thematic_section.findAll("div", 
+                                                   {"class":"thematic_chain thematic_chain_ad | row margin_top margin_bottom_sm"})
     themes = [t["id"] for t in themes]
+    themes = themes + [t["id"] for t in theme_with_adbanner]
     
     for i in themes:
         theme_title_hrefs[i] = extract_theme_hrefs(i)
-    #return self
+    
         
 # the opinion pieces are found in the 'thematic section' but go by 
 # a different identifier
@@ -71,4 +73,24 @@ def extract_oped_hrefs():
     for h in opeds.findAll("h2"):
         oped_title_hrefs.update({h.a.text: h.a["href"]})
     
-    return {"opinion": oped_title_hrefs}  
+    return {"opinion": oped_title_hrefs}
+
+if __name__=="__main__":
+    
+    opeds = extract_oped_hrefs()
+    
+    extract_top_section_hrefs()
+    
+    theme_title_hrefs['opinion'] = opeds['opinion']
+    del opeds
+    
+    extract_all_themes()
+    
+    print("TOP SECTION ARTICLES:")
+    print(top_section_title_hrefs, '\n')
+    
+    print("THEMATIC SECTION ARTICLES:")
+    print(theme_title_hrefs, '\n')
+
+    
+    

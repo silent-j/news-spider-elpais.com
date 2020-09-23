@@ -25,6 +25,7 @@ thematic_section = page_soup.find("div", {"class":
 top_section_title_hrefs = {}
     
 def extract_top_section_hrefs():
+    
     panes = section_b.findAll("h2")
     panes_2 = section_c.findAll("h2")
     
@@ -35,7 +36,6 @@ def extract_top_section_hrefs():
         href = pane.a["href"]
         top_section_title_hrefs[title] = href
     #return self
-
 
 
 def extract_theme_hrefs(theme):
@@ -59,14 +59,16 @@ def extract_all_themes():
     
     for i in themes:
         theme_title_hrefs[i] = extract_theme_hrefs(i)
+    #return self
         
 # the opinion pieces are found in the 'thematic section' but go by 
-# a different identifier. Easier to just single them out
+# a different identifier
 def extract_oped_hrefs():
-    op_eds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
-    ops_title_hrefs = {}
     
-    for h in op_eds.findAll("h2"):
-        ops_title_hrefs.update({h.a.text: h.a["href"]})
+    opeds = page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
+    oped_title_hrefs = {}
     
-    return {"opinion": ops_title_hrefs}  
+    for h in opeds.findAll("h2"):
+        oped_title_hrefs.update({h.a.text: h.a["href"]})
+    
+    return {"opinion": oped_title_hrefs}  

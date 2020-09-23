@@ -2,11 +2,11 @@ import os
 from tqdm import tqdm
 from bs4 import BeautifulSoup as soup
 from urllib import request
+import pandas as pd
 
 url = "http://english.elpais.com"
 
 # request & parse page source
-
 client = request.urlopen(url)
 page_source = client.read()
 client.close()
@@ -21,7 +21,8 @@ thematic_section = page_soup.find("div", {"class":
                                    "thematic_section | col desktop_12 tablet_8 mobile_4"})    
 
 top_section_title_hrefs = {}
-theme_title_hrefs = {}
+theme_dict = {}
+theme_title_hrefs = []
     
 def extract_top_section_hrefs():
     
@@ -35,8 +36,6 @@ def extract_top_section_hrefs():
         href = pane.a["href"]
         top_section_title_hrefs[title] = href
     
-
-
 def extract_theme_hrefs(theme):
     
     theme_div = thematic_section.find("div", {"id": theme})
@@ -60,8 +59,9 @@ def extract_all_themes():
     themes = themes + [t["id"] for t in theme_with_adbanner]
     
     for i in themes:
-        theme_title_hrefs[i] = extract_theme_hrefs(i)
+        theme_dict[i] = extract_theme_hrefs(i)
     
+      
         
 # the opinion pieces are found in the 'thematic section' but go by 
 # a different identifier
@@ -77,20 +77,31 @@ def extract_oped_hrefs():
 
 if __name__=="__main__":
     
-    opeds = extract_oped_hrefs()
-    
     extract_top_section_hrefs()
-    
-    theme_title_hrefs['opinion'] = opeds['opinion']
-    del opeds
-    
+        
     extract_all_themes()
+        
+    theme_dict['opinion'] = extract_oped_hrefs()['opinion']
+
+    frontpage_df = pd.DataFrame()
+        
+    frontpage_df['article_title'] = [k for k in top_section_title_hrefs.keys()]
     
-    print("TOP SECTION ARTICLES:")
-    print(top_section_title_hrefs, '\n')
+    #top_section_df['url'] = ['https://english.elpais.com'+top_section_title_hrefs[k] for k in list(top_section_df.article_title)]
+    frontpage_df['href'] = [top_section_title_hrefs[k] for k in list(frontpage_df.article_title)]
     
-    print("THEMATIC SECTION ARTICLES:")
-    print(theme_title_hrefs, '\n')
+    frontpage_df['section'] = ['top-headlines' for i in frontpage_df.index]
+    
+    
+    for k, v in theme_dict.items():
+        for title, href in v.items():
+            theme_title_hrefs.append({
+                'article_title': title,
+                'href': href,
+                'section': 'thematic-'+k,})
+    
+    frontpage_df = pd.concat([frontpage_df, pd.DataFrame(theme_title_hrefs)])
+    print(frontpage_df)
 
     
     

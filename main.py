@@ -62,7 +62,9 @@ class ElPaisSpider():
         frontpage_df.reset_index(inplace=True)       
         frontpage_df.to_csv("frontpage-scraped_{}.csv".format(date.today()))
         
-        return frontpage_df
+        print(frontpage_df)
+        
+        
         
     def extract_top_section_hrefs(self):
         
@@ -109,3 +111,9 @@ class ElPaisSpider():
             oped_title_hrefs.update({h.a.text: h.a["href"]})
         
         return {"opinion": oped_title_hrefs}
+
+
+if __name__=="__main__":
+    
+    ElPaisSpider('https://english.elpais.com')
+

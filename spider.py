@@ -1,5 +1,5 @@
-import os
-from tqdm import tqdm
+# import os
+# from tqdm import tqdm
 from bs4 import BeautifulSoup as soup
 from urllib import request
 import pandas as pd
@@ -64,7 +64,6 @@ def extract_all_themes():
         theme_dict[i] = extract_theme_hrefs(i)
     
       
-        
 # the opinion pieces are found in the 'thematic section' but go by 
 # a different identifier
 def extract_oped_hrefs():
@@ -93,8 +92,7 @@ if __name__=="__main__":
     frontpage_df['href'] = [top_section_title_hrefs[k] for k in list(frontpage_df.article_title)]
     
     frontpage_df['section'] = ['top-headlines' for i in frontpage_df.index]
-    
-    
+        
     for k, v in theme_dict.items():
         for title, href in v.items():
             theme_title_hrefs.append({
@@ -102,5 +100,6 @@ if __name__=="__main__":
                 'href': href,
                 'section': 'thematic-'+k,})
     
-    frontpage_df = pd.concat([frontpage_df, pd.DataFrame(theme_title_hrefs)])       
+    frontpage_df = pd.concat([frontpage_df, pd.DataFrame(theme_title_hrefs)])
+    frontpage_df.reset_index(inplace=True)       
     frontpage_df.to_csv("frontpage-scraped_{}.csv".format(date.today()))

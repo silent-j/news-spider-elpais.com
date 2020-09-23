@@ -3,6 +3,8 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup as soup
 from urllib import request
 import pandas as pd
+from datetime import date
+
 
 url = "http://english.elpais.com"
 
@@ -100,8 +102,5 @@ if __name__=="__main__":
                 'href': href,
                 'section': 'thematic-'+k,})
     
-    frontpage_df = pd.concat([frontpage_df, pd.DataFrame(theme_title_hrefs)])
-    print(frontpage_df)
-
-    
-    
+    frontpage_df = pd.concat([frontpage_df, pd.DataFrame(theme_title_hrefs)])       
+    frontpage_df.to_csv("frontpage-scraped_{}.csv".format(date.today()))

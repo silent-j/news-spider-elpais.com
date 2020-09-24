@@ -1,11 +1,10 @@
 
 import os
 import pandas as pd
-from datetime import date
 from urllib import request
 from bs4 import BeautifulSoup as soup
 
-BASE_PATH = r'C:\Users\James\Documents\Scraping\elpais-news-scraper'
+BASE_PATH = ''
 DB_PATH = os.path.join(BASE_PATH, 'data', 'db')
 DL_PATH = os.path.join(BASE_PATH, 'data', 'crawled_docs')
 
@@ -34,8 +33,21 @@ def scrape_article_text(page_soup):
         
     return paragraphs
 
-def main(url, uid):
-    
+def ElPais_BackPageSpider(url, uid):
+    """
+
+    Parameters
+    ----------
+    url : STR
+        THE URL TO AN ARTICLE SCRAPED FROM THE EL PAIS LANDING PAGE.
+    uid : INT
+        IDENTIFIER FROM THE FRONTPAGE DATABASE ASSOCIATED WITH PROVIDED URL.
+
+    Returns
+    -------
+    None.
+
+    """
     article_metadata = []
     
     client = request.urlopen(url)
@@ -43,13 +55,20 @@ def main(url, uid):
     client.close()
     
     page_soup = soup(page_source, 'html.parser')
+    
+    article_text = scrape_article_text(page_soup)
+    
+    word_count = len(''.join(article_text).split(' '))
         
-    metadata = scrape_article_metadata(page_soup)    
+    metadata = scrape_article_metadata(page_soup)   
+    metadata['scrape_id'] = uid
+    metadata['word_count'] = word_count
     article_metadata.append(metadata)
 
-    article_text = scrape_article_text(page_soup)
     
     with open(os.path.join(DL_PATH, f'{uid}_{metadata["pub_date"]}.txt'), 'w') as outfile:
         for l in article_text:
             outfile.write(l, '\n')
         outfile.close()
+    
+    return article_metadata

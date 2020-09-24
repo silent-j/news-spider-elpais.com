@@ -5,14 +5,26 @@ from datetime import date, datetime
 from urllib import request
 from bs4 import BeautifulSoup as soup
 
-BASE_PATH = r'C:\Users\James\Documents\Scraping\elpais-news-scraper'
+BASE_PATH = ''
 DB_PATH = os.path.join(BASE_PATH, 'data', 'db')
 
 if not os.path.exists(DB_PATH):
     os.mkdir(DB_PATH)
 
 class ElPais_FrontPageSpider():
-    
+    """
+    Class for parsing https://english.elpais.com landing page
+    and extracting article titles & urls for storage in a database
+    Parameters
+    ----------
+    url : STR
+        THE URL TO EL PAIS LANDING PAGE (ie. https://english.elpais.com)
+
+    Returns
+    -------
+    None.
+
+    """
     def __init__(self, url):
         
         client = request.urlopen(url)
@@ -53,11 +65,11 @@ class ElPais_FrontPageSpider():
             for title, href in v.items():
                 self.theme_title_hrefs.append({'article_title':title,
                                                'href': href,
-                                               'section': 'thematic-'+k})
-        
+                                               'section': 'thematic-'+k})        
         # export to CSV
         self.frontpage_df = pd.concat([self.frontpage_df, pd.DataFrame(self.theme_title_hrefs)])
-        self.frontpage_df['scrape_id'] = [uuid.uuid4() for i in list(self.frontpage_df.index)]
+        self.frontpage_df['scrape_date'] = [date.today() for i in list(self.frontpage_df.index)]
+        self.frontpage_df['scrape_id'] = [uuid.uuid4().fields[0] for i in list(self.frontpage_df.index)]
 
         self.frontpage_df.reset_index(inplace=True)
         self.frontpage_df.drop_duplicates(subset='href', keep='first', inplace=True)
@@ -67,11 +79,9 @@ class ElPais_FrontPageSpider():
         if os.path.exists(DB_PATH+"\frontpage-data.csv"):
             self.frontpage_df.to_csv(os.path.join(DB_PATH, "\frontpage-data.csv"), mode='a', header=None)
         else:
-            self.frontpage_df.to_csv(os.path.join(DB_PATH, "\frontpage-data.csv"))
-        
+            self.frontpage_df.to_csv(os.path.join(DB_PATH, "\frontpage-data.csv"))        
         print("run successfully at {}".format(datetime.date))       
-        
-        
+      
         
     def extract_top_section_hrefs(self):
         

@@ -16,11 +16,35 @@ if not os.path.exists(DL_PATH):
 
 def scrape_article_metadata(page_soup):    
 
-    author = page_soup.find("a", {"class":"a_aut_n | color_black"}).text
-    location = page_soup.find("span", {"class":"a_pl | capitalize color_black"}).text
-    pub_date = pd.to_datetime(page_soup.find("a", {"class":"a_ti"}).text)    
-    pub_date = pub_date.strftime("%Y-%m-%d")
+    author_search = page_soup.find("a", {"class":"a_aut_n | color_black"})
+    loc_search = page_soup.find("span", {"class":"a_pl | capitalize color_black"})    
+    pub_date_search = page_soup.find("a", {"class":"a_ti"})    
+        
+    if author_search is not None:
+        try:
+            author = author_search.text
+        except AttributeError:
+            author = ''
+    else:
+        author = ''    
     
+    if loc_search is not None:
+        try:
+            location = loc_search.text
+        except AttributeError:
+            location = ''
+    else:
+        location = ''
+    
+    if pub_date_search is not None:
+        try:
+            pub_date = pd.to_datetime(pub_date_search.text)
+            pub_date = pub_date.strftime("%Y-%m-%d")
+        except Exception:
+            pub_date = ''
+    else:
+        pub_date = ''    
+        
     return {'author':author, 'pub_date':pub_date, 'location':location}
    
 def scrape_article_text(page_soup):
@@ -38,7 +62,6 @@ def scrape_article_text(page_soup):
 
 def ElPais_BackPageSpider(url, uid):
     """
-
     Parameters
     ----------
     url : STR
@@ -49,7 +72,6 @@ def ElPais_BackPageSpider(url, uid):
     Returns
     -------
     None.
-
     """
     
     client = request.urlopen(url)
@@ -60,10 +82,9 @@ def ElPais_BackPageSpider(url, uid):
     
     article_text = scrape_article_text(page_soup)
     
-    word_count = len(''.join(article_text).split(' '))
+    word_count = len(' '.join(article_text).split(' '))
         
     metadata = scrape_article_metadata(page_soup)   
-    metadata['scrape_id'] = uid
     metadata['word_count'] = word_count
     ARTICLE_METADATA.append(metadata)
 

@@ -13,7 +13,6 @@ BASE_PATH = r'C:\Users\James\Documents\Scraping\elpais-news-scraper'
 frontpage_scraper.BASE_PATH = BASE_PATH
 backpage_scraper.BASE_PATH  = BASE_PATH
 
-
 user_inp = "https://english.elpais.com"
 
 print("########## SCRAPING FRONTPAGE ##########")
@@ -38,6 +37,7 @@ ARTICLE_METADATA = backpage_scraper.ARTICLE_METADATA
 
 DATA_TO_BE_INSERTED = pd.concat([new_data, pd.DataFrame(ARTICLE_METADATA)], axis=1)
 
+
 if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db')):
     # MAKE CONNECTION
     connection = sqlite3.connect(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db'))
@@ -46,17 +46,16 @@ if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db
     
     # CREATE TABLE
     c.execute('''CREATE TABLE ARTICLES
-              (index INTEGER,
-              article_title VARCHAR,
-              href VARCHAR,
-              section VARCHAR,
-              scrape_date DATE,
-              scrape_id INTEGER,
-              author VARCHAR,
-              pub_date DATE,
-              location VARCHAR,
-              word_count VARCHAR)
-              ''')
+              (index integer,
+              article_title text,
+              href text,
+              section text,
+              scrape_date date,
+              scrape_id integer,
+              author text,
+              pub_date date,
+              location text,
+              word_count text)''')
     print("created table ARTICLES in frontpage-data.db")
 
 else:

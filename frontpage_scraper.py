@@ -81,7 +81,7 @@ class ElPais_FrontPageSpider():
         
         
         self.frontpage_df.to_csv(ARCHIVE_PATH + r"\frontpage-data_{}.csv".format(date.today()),
-                                 index=0)       
+                                 index=0)  
         print("task ran successfully at {}".format(datetime.today()))
       
         

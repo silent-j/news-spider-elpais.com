@@ -5,6 +5,13 @@ from datetime import date
 from urllib import request
 from bs4 import BeautifulSoup as soup
 
+BASE_PATH = r'C:\Users\James\Documents\Scraping\elpais-news-scraper'
+DB_PATH = os.path.join(BASE_PATH, 'data', 'db')
+DL_PATH = os.path.join(BASE_PATH, 'data', 'crawled_docs')
+
+if not os.path.exists(DL_PATH):
+    os.mkdir(DL_PATH)
+
 
 def scrape_article_metadata(page_soup):    
 
@@ -27,38 +34,22 @@ def scrape_article_text(page_soup):
         
     return paragraphs
 
-if __name__=="__main__":
-    frontpage_df = pd.read_csv(r'C:\Users\James\Documents\Scraping\elpais-news-scraper\frontpage-scraped_2020-09-23.csv',
-                           index_col=0)
-
-    crawl_depo = r'C:\Users\James\Documents\Scraping\elpais-news-scraper\crawled_docs_{}'.format(date.today())
+def main(url, uid):
     
     article_metadata = []
     
-    if not os.path.exists(crawl_depo):
-        os.mkdir(crawl_depo)
+    client = request.urlopen(url)
+    page_source = client.read()
+    client.close()
     
-    for i in frontpage_df.index:
+    page_soup = soup(page_source, 'html.parser')
         
-        base_url = 'https://english.elpais.com'
-        href = frontpage_df.loc[i, 'href']
-        
-        client = request.urlopen(base_url+href)
-        page_source = client.read()
-        client.close()
-        
-        page_soup = soup(page_source, 'html.parser')
-        
-        metadata = scrape_article_metadata(page_soup)
-        
-        article_metadata.append(metadata)
-        
-        article_text = scrape_article_text(page_soup)
-        
-        with open(os.path.join(crawl_depo, f'{i}_{metadata["pub_date"]}.txt'), 'w') as outfile:
-            for l in article_text:
-                outfile.write(l, '\n')
-            outfile.close()
-        break
+    metadata = scrape_article_metadata(page_soup)    
+    article_metadata.append(metadata)
 
-
+    article_text = scrape_article_text(page_soup)
+    
+    with open(os.path.join(DL_PATH, f'{uid}_{metadata["pub_date"]}.txt'), 'w') as outfile:
+        for l in article_text:
+            outfile.write(l, '\n')
+        outfile.close()

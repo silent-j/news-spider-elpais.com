@@ -1,8 +1,15 @@
 import os
+import uuid
 import pandas as pd
-from datetime import date
+from datetime import date, datetime
 from urllib import request
 from bs4 import BeautifulSoup as soup
+
+BASE_PATH = r'C:\Users\James\Documents\Scraping\elpais-news-scraper'
+DB_PATH = os.path.join(BASE_PATH, 'data', 'db')
+
+if not os.path.exists(DB_PATH):
+    os.mkdir(DB_PATH)
 
 class ElPais_FrontPageSpider():
     
@@ -33,10 +40,10 @@ class ElPais_FrontPageSpider():
         self.frontpage_df = pd.DataFrame()
         
         # grab titles & hrefs
-        self.extract_top_section_hrefs()       
+        self.extract_top_section_hrefs()
         self.extract_all_themes() # returns updated 'theme_dict'
         self.theme_dict['opinion'] = self.extract_oped_hrefs()['opinion']
-
+        
         
         self.frontpage_df['article_title'] = [k for k in self.top_section_title_hrefs.keys()]        
         self.frontpage_df['href'] = [self.top_section_title_hrefs[k] for k in list(self.frontpage_df.article_title)]    
@@ -47,12 +54,22 @@ class ElPais_FrontPageSpider():
                 self.theme_title_hrefs.append({'article_title':title,
                                                'href': href,
                                                'section': 'thematic-'+k})
+        
         # export to CSV
         self.frontpage_df = pd.concat([self.frontpage_df, pd.DataFrame(self.theme_title_hrefs)])
-        self.frontpage_df.reset_index(inplace=True)       
-        self.frontpage_df.to_csv("frontpage-scraped_{}.csv".format(date.today()))
+        self.frontpage_df['scrape_id'] = [uuid.uuid4() for i in list(self.frontpage_df.index)]
+
+        self.frontpage_df.reset_index(inplace=True)
+        self.frontpage_df.drop_duplicates(subset='href', keep='first', inplace=True)
+        print(f"{self.frontpage_df.shape[0]} articles scraped")
         
-        print(self.frontpage_df)
+        
+        if os.path.exists(DB_PATH+"\frontpage-data.csv"):
+            self.frontpage_df.to_csv(os.path.join(DB_PATH, "\frontpage-data.csv"), mode='a', header=None)
+        else:
+            self.frontpage_df.to_csv(os.path.join(DB_PATH, "\frontpage-data.csv"))
+        
+        print("run successfully at {}".format(datetime.date))       
         
         
         

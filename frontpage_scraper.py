@@ -7,9 +7,13 @@ from bs4 import BeautifulSoup as soup
 
 BASE_PATH = ''
 DB_PATH = os.path.join(BASE_PATH, 'data', 'db')
+ARCHIVE_PATH = os.path.join(BASE_PATH, 'data', 'archive')
 
 if not os.path.exists(DB_PATH):
     os.mkdir(DB_PATH)
+
+if not os.path.exists(ARCHIVE_PATH):
+    os.mkdir(ARCHIVE_PATH)
 
 class ElPais_FrontPageSpider():
     """
@@ -76,11 +80,9 @@ class ElPais_FrontPageSpider():
         print(f"{self.frontpage_df.shape[0]} articles scraped")
         
         
-        if os.path.exists(DB_PATH+"\frontpage-data.csv"):
-            self.frontpage_df.to_csv(os.path.join(DB_PATH, "\frontpage-data.csv"), mode='a', header=None)
-        else:
-            self.frontpage_df.to_csv(os.path.join(DB_PATH, "\frontpage-data.csv"))        
-        print("run successfully at {}".format(datetime.date))       
+        self.frontpage_df.to_csv(ARCHIVE_PATH + r"\frontpage-data_{}.csv".format(date.today()),
+                                 index=0)       
+        print("task ran successfully at {}".format(datetime.today()))
       
         
     def extract_top_section_hrefs(self):

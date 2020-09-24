@@ -8,6 +8,8 @@ BASE_PATH = ''
 DB_PATH = os.path.join(BASE_PATH, 'data', 'db')
 DL_PATH = os.path.join(BASE_PATH, 'data', 'crawled_docs')
 
+ARTICLE_METADATA = []
+
 if not os.path.exists(DL_PATH):
     os.mkdir(DL_PATH)
 
@@ -23,13 +25,14 @@ def scrape_article_metadata(page_soup):
    
 def scrape_article_text(page_soup):
     
-    article_body = page_soup.find("div", {"class":"a_b article_body | color_gray_dark"})
-    p_search = article_body.findAll("p")
-    
     paragraphs = []
     
-    for p in p_search:
-        paragraphs.append(p.text)
+    article_body = page_soup.find("div", {"class":"a_b article_body | color_gray_dark"})
+    if article_body is not None:
+        p_search = article_body.findAll("p")        
+        
+        for p in p_search:
+            paragraphs.append(p.text)
         
     return paragraphs
 
@@ -48,7 +51,6 @@ def ElPais_BackPageSpider(url, uid):
     None.
 
     """
-    article_metadata = []
     
     client = request.urlopen(url)
     page_source = client.read()
@@ -63,12 +65,10 @@ def ElPais_BackPageSpider(url, uid):
     metadata = scrape_article_metadata(page_soup)   
     metadata['scrape_id'] = uid
     metadata['word_count'] = word_count
-    article_metadata.append(metadata)
+    ARTICLE_METADATA.append(metadata)
 
     
-    with open(os.path.join(DL_PATH, f'{uid}_{metadata["pub_date"]}.txt'), 'w') as outfile:
+    with open(os.path.join(DL_PATH, f'{uid}_{metadata["author"]}_{metadata["pub_date"]}.txt'), 'w', encoding='utf8') as outfile:
         for l in article_text:
-            outfile.write(l, '\n')
+            outfile.write(l+'\n')
         outfile.close()
-    
-    return article_metadata

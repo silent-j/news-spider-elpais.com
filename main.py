@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep 23 19:38:31 2020
-
-@author: James
-"""
 import os
 import pandas as pd
 from datetime import date
@@ -32,25 +26,21 @@ class ElPaisSpider():
                                                     {"class":
                                                      "thematic_section | col desktop_12 tablet_8 mobile_4"
                                                      })    
-        
+        # containers
         self.top_section_title_hrefs = {}
         self.theme_dict = {}
         self.theme_title_hrefs = []
+        self.frontpage_df = pd.DataFrame()
         
-        
+        # grab titles & hrefs
         self.extract_top_section_hrefs()       
-        self.extract_all_themes()
-        
-
+        self.extract_all_themes() # returns updated 'theme_dict'
         self.theme_dict['opinion'] = self.extract_oped_hrefs()['opinion']
 
-        frontpage_df = pd.DataFrame()
-            
-        frontpage_df['article_title'] = [k for k in self.top_section_title_hrefs.keys()]
         
-        frontpage_df['href'] = [self.top_section_title_hrefs[k] for k in list(frontpage_df.article_title)]
-    
-        frontpage_df['section'] = ['top-headlines' for i in frontpage_df.index]
+        self.frontpage_df['article_title'] = [k for k in self.top_section_title_hrefs.keys()]        
+        self.frontpage_df['href'] = [self.top_section_title_hrefs[k] for k in list(self.frontpage_df.article_title)]    
+        self.frontpage_df['section'] = ['top-headlines' for i in self.frontpage_df.index]
             
         for k, v in self.theme_dict.items():
             for title, href in v.items():
@@ -58,11 +48,11 @@ class ElPaisSpider():
                                                'href': href,
                                                'section': 'thematic-'+k})
         # export to CSV
-        frontpage_df = pd.concat([frontpage_df, pd.DataFrame(self.theme_title_hrefs)])
-        frontpage_df.reset_index(inplace=True)       
-        frontpage_df.to_csv("frontpage-scraped_{}.csv".format(date.today()))
+        self.frontpage_df = pd.concat([self.frontpage_df, pd.DataFrame(self.theme_title_hrefs)])
+        self.frontpage_df.reset_index(inplace=True)       
+        self.frontpage_df.to_csv("frontpage-scraped_{}.csv".format(date.today()))
         
-        print(frontpage_df)
+        print(self.frontpage_df)
         
         
         

@@ -28,15 +28,19 @@ backpage_scraper_args = list(zip(new_data['href'], new_data['scrape_id']))
 print("\n########## SCRAPING BACKPAGES ##########")
 
 # PASS LIST OF URLS, IDS TO BACKPAGESPIDER 
-
+# TODO: MULTIPROCESSING
 for t in tqdm(backpage_scraper_args):
     
     ElPais_BackPageSpider(user_inp+t[0], t[1])  
-    
+
+
+# CONNECT TO DATABASE    
 ARTICLE_METADATA = backpage_scraper.ARTICLE_METADATA
 
 DATA_TO_BE_INSERTED = pd.concat([new_data, pd.DataFrame(ARTICLE_METADATA)], axis=1)
 
+DATA_TO_BE_INSERTED = DATA_TO_BE_INSERTED[['article_title', 'href', 'section', 'scrape_date',
+                                           'scrape_id', 'author', 'pub_date', 'location', 'word_count']]
 
 if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db')):
     # MAKE CONNECTION
@@ -62,6 +66,6 @@ else:
     connection = sqlite3.connect(os.path.join(frontpage_scraper.DB_PATH,'frontpage-data.db'))
     
     
-DATA_TO_BE_INSERTED.to_sql('ARTICLES', connection, if_exists='append', index=True)
+DATA_TO_BE_INSERTED.to_sql('ARTICLES', connection, if_exists='append', index=False)
 
 connection.close()

@@ -65,7 +65,7 @@ if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db
 else:
     connection = sqlite3.connect(os.path.join(frontpage_scraper.DB_PATH,'frontpage-data.db'))
     
-    
+# INSERT DATA    
 DATA_TO_BE_INSERTED.to_sql('ARTICLES', connection, if_exists='append', index=False)
 
 connection.close()

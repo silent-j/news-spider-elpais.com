@@ -76,7 +76,7 @@ if __name__=="__main__":
     # CONNECT TO DB & INSERT DATA
     if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db')):    
         
-        create_connection(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db'))        
+        connection = create_connection(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db'))        
     else:
         connection = sqlite3.connect(os.path.join(frontpage_scraper.DB_PATH,'frontpage-data.db'))
         

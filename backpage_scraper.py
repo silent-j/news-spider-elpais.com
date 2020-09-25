@@ -89,7 +89,7 @@ def ElPais_BackPageSpider(url, uid):
     ARTICLE_METADATA.append(metadata)
 
     
-    with open(os.path.join(DL_PATH, f'{uid}_{metadata["author"]}_{metadata["pub_date"]}.txt'), 'w', encoding='utf8') as outfile:
-        for l in article_text:
-            outfile.write(l+'\n')
-        outfile.close()
+    # with open(os.path.join(DL_PATH, f'{uid}_{metadata["author"]}_{metadata["pub_date"]}.txt'), 'w', encoding='utf8') as outfile:
+    #     for l in article_text:
+    #         outfile.write(l+'\n')
+    #     outfile.close()

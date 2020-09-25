@@ -46,8 +46,7 @@ if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db
     
     # CREATE TABLE
     c.execute('''CREATE TABLE ARTICLES
-              (index integer,
-              article_title text,
+              (article_title text,
               href text,
               section text,
               scrape_date date,
@@ -56,12 +55,13 @@ if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db
               pub_date date,
               location text,
               word_count text)''')
+              
     print("created table ARTICLES in frontpage-data.db")
 
 else:
     connection = sqlite3.connect(os.path.join(frontpage_scraper.DB_PATH,'frontpage-data.db'))
     
     
-DATA_TO_BE_INSERTED.to_sql('ARTICLES', connection, if_exists='append', index=False)
+DATA_TO_BE_INSERTED.to_sql('ARTICLES', connection, if_exists='append', index=True)
 
 connection.close()

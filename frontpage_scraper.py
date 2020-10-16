@@ -77,7 +77,7 @@ class ElPais_FrontPageSpider():
 
         self.frontpage_df.reset_index(inplace=True)
         self.frontpage_df.drop_duplicates(subset='href', keep='first', inplace=True)
-        print(f"{self.frontpage_df.shape[0]} articles scraped")
+        print(f"{self.frontpage_df.shape[0]} articles scraped from front page")
         
         
         self.frontpage_df.to_csv(ARCHIVE_PATH + r"\frontpage-data_{}.csv".format(date.today()),

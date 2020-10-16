@@ -54,27 +54,28 @@ if __name__=="__main__":
     current_spider = ElPais_FrontPageSpider(URL)
     
         # CONNECT TO DB & INSERT DATA
-    print("########## CONNECTING TO DATABASE ##########")
-    if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db')):    
-        
+    print("\n########## CONNECTING TO DATABASE ##########")
+    if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db')):            
         connection = create_connection(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db'))        
+        
     else:
         connection = sqlite3.connect(os.path.join(frontpage_scraper.DB_PATH,'frontpage-data.db'))
     
-    existing_data = pd.read_sql_query("SELECT * FROM ARTICLES", connection)
-            
+    existing_data = pd.read_sql_query("SELECT * FROM ARTICLES", connection)    
         
     # GET NEWLY CRAWLED DATA FROM THE CURRENT SPIDER - CHECK FOR DUPLICATES
     new_data = current_spider.frontpage_df
-
-    new_data = new_data[new_data['href'].isin(existing_data['href'])==False]
+    count_1= new_data.shape[0]
     
+    new_data = new_data[new_data['href'].isin(existing_data['href'])==False]    
+    print(f"{count_1 - new_data.shape[0]} duplicate articles ignored for scraping")
     
     if new_data.shape[0] > 0:
+        print("\n########## SCRAPING BACKPAGES ##########")  
+        print(f"Scraping metadata for {new_data.shape[0]} articles")
         # FORMAT THE ARGS FOR THE BACKPAGE SPIDER
         backpage_scraper_args = list(zip(new_data['href'], new_data['scrape_id']))
         
-        print("\n########## SCRAPING BACKPAGES ##########")    
     
         # TODO: MULTIPROCESSING
         for t in tqdm(backpage_scraper_args):

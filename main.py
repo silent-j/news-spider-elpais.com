@@ -72,6 +72,7 @@ if __name__=="__main__":
     
     DATA_TO_BE_INSERTED = DATA_TO_BE_INSERTED[['article_title', 'href', 'section', 'scrape_date',
                                                'scrape_id', 'author', 'pub_date', 'location', 'word_count']]
+    DATA_TO_BE_INSERTED = DATA_TO_BE_INSERTED.drop_duplicates(subset='href', keep='first')
     
     # CONNECT TO DB & INSERT DATA
     if not os.path.exists(os.path.join(frontpage_scraper.DB_PATH, 'frontpage-data.db')):    

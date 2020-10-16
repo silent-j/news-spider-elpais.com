@@ -58,7 +58,7 @@ class ElPais_FrontPageSpider():
         # grab titles & hrefs
         self.extract_top_section_hrefs()
         self.extract_all_themes() # returns updated 'theme_dict'
-        self.theme_dict['opinion'] = self.extract_oped_hrefs()['opinion']
+        #self.theme_dict['opinion'] = self.extract_oped_hrefs()['opinion']
         
         
         self.frontpage_df['article_title'] = [k for k in self.top_section_title_hrefs.keys()]        
@@ -111,10 +111,15 @@ class ElPais_FrontPageSpider():
     
     def extract_all_themes(self):
         
-        themes = self.thematic_section.findAll("div",
-                             {"class":"thematic_chain | row margin_top margin_bottom_sm"})
-        theme_with_adbanner = self.thematic_section.findAll("div", 
-                                                       {"class":"thematic_chain thematic_chain_ad | row margin_top margin_bottom_sm"})
+        # themes = self.thematic_section.findAll("div",
+        #                      {"class":"thematic_chain | row margin_top margin_bottom_sm"})
+        # theme_with_adbanner = self.thematic_section.findAll("div", 
+        #                                                {"class":"thematic_chain thematic_chain_ad | row margin_top margin_bottom_sm"})
+        themes = self.thematic_section.select('div[class*="thematic_chain | row margin_top margin_bottom_sm"]')
+        
+        theme_with_adbanner = self.thematic_section.select('div[class*="thematic_chain thematic_chain_ad | row margin_top margin_bottom_sm"]')
+        
+        
         themes = [t["id"] for t in themes]
         themes = themes + [t["id"] for t in theme_with_adbanner]
         
@@ -123,7 +128,7 @@ class ElPais_FrontPageSpider():
 
     def extract_oped_hrefs(self):
         
-        opeds = self.page_soup.find("div", {"class":"thematic_opinion | row margin_bottom_sm"})
+        opeds = self.page_soup.find("div", {"class":"b b__t b b__t__o thematic_opinion | row margin_bottom_sm"})
         oped_title_hrefs = {}
         
         for h in opeds.findAll("h2"):
